@@ -7,7 +7,7 @@
             <th>Last Name</th>
             <th>Email</th>
             <th>Access Level</th>
-            <th>Password</th>
+           <!--  <th>Password</th> -->
             <th>Action</th>
         </tr>
         </thead>
@@ -20,8 +20,12 @@
                 <td><%= user.lastName %></td>
                 <td><%= user.email %></td>
                 <td><%= user.accessLevel %></td>
-                <td><%= user.password %></td>
-                <td><a class="btn btn-primary" href="/api/user/<%=user.id%>">Details</a> </td>
+               <!--  <td><%= user.password %></td> -->
+                <td>
+                    <a class="btn btn-primary" href="/api/user/<%=user.id%>">Details</a> 
+                <a class="btn btn-info" href="/api/user/editUser/<%= {user: user}%>">Edit</a>
+                <a class="btn btn-danger" href="/api/user/delete/<%= {user: user}%>">Delete</a>
+                </td>
             </tr>
         <% count++ }) %>
         </tbody>

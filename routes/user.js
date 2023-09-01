@@ -22,9 +22,25 @@ router.get('/new', (req, res) => {
 
 // GET - Get specific user by id
 router.get('/:id', async (req, res) => {
-    //res.send('Find user by ID')
+    let userId = req.params.id
+    
     try{
-        const foundUser = await User.findById(req.query.id).exec();
+        const foundUser = await User.findById(userId).exec();
+        console.log('User Found')
+        res.send(foundUser);
+    } catch (err){
+        res.redirect('/')
+        console.log("Entry not found.")
+    }
+})
+
+// PUT - Update user with id
+router.put('/', async (req, res) => {
+    let userId = req.params.id
+    
+    try{
+        const foundUser = await User.findById(userId).exec();
+        console.log('User Found')
         res.send(foundUser);
     } catch (err){
         res.redirect('/')
@@ -35,7 +51,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
 
     // Hash the password
-    let passwordHash = generatePasswordHAsh(req.body.password)
+    let passwordHash = generatePasswordHash(req.body.password)
     console.log(passwordHash)
 
     // Create new User object with hashed password
@@ -47,6 +63,7 @@ router.post('/', async (req, res) => {
         password: passwordHash
     })
 
+    // Save the new user to the database
     try {
         const addUser = await user.save();
         console.log('New user crested.')
@@ -57,7 +74,7 @@ router.post('/', async (req, res) => {
 })
 
 
-function generatePasswordHAsh(password) {
+function generatePasswordHash(password) {
     return jwt.sign(password, process.env.TOKEN_SECRET)
 }
 
