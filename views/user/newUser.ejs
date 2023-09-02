@@ -1,12 +1,14 @@
 <div class="container">
     <div class="col-6">
-
         <h2>New User</h2>
 
         <form action="/api/user" method="post">
             <%- include('_form_fields') %>
+            <div>
+                <p class="text-danger"><%- include('../partials/errorMessage') %></p>
+            </div>
             <a class="btn btn-danger" href="/api">Cancel</a>
-            <button class=" btn btn-primary" type="submit">Create</button>
+            <button class="btn btn-primary" type="submit">Create</button>
         </form>
     </div>
 </div>
