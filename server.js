@@ -5,28 +5,31 @@
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                                Dependencies                                                        */
 /*--------------------------------------------------------------------------------------------------------------------*/
-require('dotenv').config()
-require('crypto').randomBytes(64).toString('hex')
-const bodyParser = require('body-parser')
-const express = require('express')
-const expressLayouts = require('express-ejs-layouts')
-const mongoose = require('mongoose').default
-const cors = require('cors')
-const port = process.env.PORT || 3000
+require('dotenv').config();
+require('crypto').randomBytes(64).toString('hex');
+const bodyParser = require('body-parser');
+const express = require('express');
+const expressLayouts = require('express-ejs-layouts');
+const mongoose = require('mongoose').default;
+const cors = require('cors');
+const port = process.env.PORT || 3000;
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+/*                                             Express App Setup                                                      */
+/*--------------------------------------------------------------------------------------------------------------------*/
+const app = express();
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                             Database Connection                                                    */
 /*--------------------------------------------------------------------------------------------------------------------*/
 mongoose.connect(process.env.DATABASE_URL, {dbName: 'assessmentOne'})
-const db = mongoose.connection
-db.on('error', error => console.log(error))
-db.once('open', () => console.log('Connected to Mongoose'))
+.then((result) => app.listen(port, () => {console.log(`Server running on ${port}.`)}))
+.catch((err)=> console.log(err));
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-/*                                             Express App Setup                                                      */
+/*                                                 Middleware                                                         */
 /*--------------------------------------------------------------------------------------------------------------------*/
-const app = express()
+app.use(express.static('public'))
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                               Views Settings                                                       */
@@ -55,17 +58,17 @@ app.get('/api', (req, res) => {
 /*                                                 User Route                                                         */
 /*--------------------------------------------------------------------------------------------------------------------*/
 const userRouter = require('./routes/user');
-app.use('/api/user', userRouter);
+app.use('/user', userRouter);
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                                 Auth Route                                                         */
 /*--------------------------------------------------------------------------------------------------------------------*/
 const authRouter = require('./routes/auth')
-app.use('/api/auth', authRouter)
+app.use('/auth', authRouter)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                                     Run                                                            */
 /*--------------------------------------------------------------------------------------------------------------------*/
-app.listen(port, () => {
+/* app.listen(port, () => {
     console.log('App is running on port ', port)
-})
+}) */
