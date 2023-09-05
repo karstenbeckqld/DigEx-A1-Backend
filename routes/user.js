@@ -3,14 +3,13 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 
 // Handle errors for user signup
+// Error handling function derived from Net Ninja Tutorial Node.js Auth Tutorial (JWT),
+// https://www.youtube.com/playlist?list=PL4cUxeGkcC9iqqESP8335DA5cRFp8loyp
 const handleErrors = (err) => {
-    //console.log(err.message, err.code);
 
-    let errors = {email: '', password: ''}
+    let errors = {email: '', password: ''};
 
     // Duplicate email error
     if (err.code === 11000) {
@@ -27,12 +26,12 @@ const handleErrors = (err) => {
 
         return errors;
     }
-}
+};
 
-
-// GET - Get all users
+// GET - Get all users -------------------------------------------------------------------------------------------------
+// Endpoint: /user
 router.get('/', async (req, res) => {
-    const result = await User.find({})
+    await User.find()
         .then((users) => {
             res.status(200).json(users);
 
@@ -41,43 +40,76 @@ router.get('/', async (req, res) => {
         })
         .catch((err) => {
             console.log('Cannot get list of users: ', err);
+            res.status(400).json({
+                message: 'Cannot get users.',
+                error: err
+            })
 
             // For A3
             // res.redirect('/');
-        })
+        });
 });
 
-// GET - Show Form to input new user
+// GET - Get specific user by id ---------------------------------------------------------------------------------------
+// Endpoint: /user/:id
+router.get('/:id', async (req, res) => {
+    await User.findById(req.params.id)
+        .then((user) => {
+            if (!user) {
+                res.status(404).json({
+                    message: 'User does not exist.',
+                });
+            } else {
+                console.log('User Found');
+                res.json(user);
+            }
+        })
+        .catch((err) => {
+            console.log('User not found: ', err);
+            res.status(400).json({
+                message: 'Cannot find user.',
+                error: err
+            })
+
+            // For A3
+            // res.redirect('/');
+        });
+});
+
+// GET - Show Form to input new user -----------------------------------------------------------------------------------
+// Endpoint: /user/new
 router.get('/new', (req, res) => {
     res.render('user/newUser', {user: new User()});
 });
 
-// GET - Get specific user by id
-router.get('/:id', async (req, res) => {
-    let userId = req.params.id;
-
-    try {
-        const foundUser = await User.findById(userId).exec();
-        console.log('User Found');
-        res.send(foundUser);
-    } catch (err) {
-        res.redirect('/');
-        console.log('Entry not found.');
-    }
-});
-
-// POST - Receive Form Data from GET('/new')
+// POST - Receive Form Data from GET('/new') ---------------------------------------------------------------------------
+// Endpoint: /user
 router.post('/', async (req, res) => {
+
+    // Check if the request body is empty and if yes, return here.
+    if (!req.body) {
+        return res.status(400).json({
+            message: "Empty body received."
+        });
+    }
+
     // Setup new User object with data from request body.
     const {firstName, lastName, email, accessLevel, password, bio} = req.body;
 
     // Create new User object
-    const user = new User({firstName, lastName, email, accessLevel, password, bio});
+    const user = new User({
+        firstName,
+        lastName,
+        email,
+        accessLevel,
+        password,
+        bio,
+    });
 
     // Save the new user to the database
 
     await user.save()
-        .then((result) => {
+        .then((user) => {
             console.log('New user created.');
             res.status(201).json(user);
             //res.redirect('/api/user');
@@ -86,36 +118,69 @@ router.post('/', async (req, res) => {
             /* Because the User object defines the email to be unique, mongoose will check for this property and throw an
              error, if the entered email already is in the database. This will get caught here and the user returned to
              the New User dialog with an error message. */
+            console.log('User not created.');
             const errors = handleErrors(err);
-            res.status(400).json({errors});
-            console.log('No user created.');
+            res.status(500).json({errors});
+
 
             // For A3
             // res.render('user/newUser', {
             //    user: user,
             //    errorMessage: err,
             // });
+        });
+});
+
+// PUT - Update user with id -------------------------------------------------------------------------------------------
+// Endpoint: /user/:id
+router.put('/:id', async (req, res) => {
+
+    // Check if the request body is empty and if yes, return here.
+    if (!req.body) {
+        return res.status(400).json({
+            message: "Empty body received."
+        });
+    }
+
+    // Update the user model
+    await User.findByIdAndUpdate(req.params.id, req.body, {new: true})
+        .then((user) => {
+            res.json(user);
+        })
+        .catch((err) => {
+            console.log('User not updated.', err);
+            res.status(500).json({
+                message: 'User not updated.',
+                error: err
+            });
         })
 });
 
+// DELETE - Delete user with id ----------------------------------------------------------------------------------------
+// Endpoint: /user/:id
+router.delete('/:id', async (req, res) => {
 
-// PUT - Update user with id
-router.put('/', async (req, res) => {
-    let userId = req.params.id;
-
-    try {
-        const foundUser = await User.findById(userId).exec();
-        console.log('User Found');
-        res.send(foundUser);
-    } catch (err) {
-        res.redirect('/');
-        console.log('Entry not found.');
+    // Check id ID is missing from the request
+    if (!req.params.id) {
+        return res.status(400).json({
+            message: 'User ID missing from request'
+        })
     }
-});
 
-function generateToken(password) {
-    return jwt.sign(password, process.env.TOKEN_SECRET);
-}
-
+    // Delete the user with Id from request
+    await User.findOneAndDelete({_id: req.params.id})
+        .then(() => {
+            res.json({
+                message: `User with ID: ${req.params.id} deleted.`
+            })
+        })
+        .catch((err) => {
+            console.log('User not deleted.', err);
+            res.status(500).json({
+                message: 'User not deleted.',
+                error: err
+            });
+        })
+})
 
 module.exports = router;

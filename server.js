@@ -8,6 +8,7 @@
 require('dotenv').config();
 require('crypto').randomBytes(64).toString('hex');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose').default;
@@ -19,17 +20,15 @@ const port = process.env.PORT || 3000;
 /*--------------------------------------------------------------------------------------------------------------------*/
 const app = express();
 
-/*--------------------------------------------------------------------------------------------------------------------*/
-/*                                             Database Connection                                                    */
-/*--------------------------------------------------------------------------------------------------------------------*/
-mongoose.connect(process.env.DATABASE_URL, {dbName: 'assessmentOne'})
-.then((result) => app.listen(port, () => {console.log(`Server running on ${port}.`)}))
-.catch((err)=> console.log(err));
+
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                                 Middleware                                                         */
 /*--------------------------------------------------------------------------------------------------------------------*/
 app.use(express.static('public'))
+app.use(cookieParser());
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: true}))
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                               Views Settings                                                       */
@@ -41,15 +40,33 @@ app.set('layout', 'layouts/layout')
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                                 App Uses                                                           */
 /*--------------------------------------------------------------------------------------------------------------------*/
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
 app.use('*', cors())
 app.use(expressLayouts)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+/*                                             Database Connection                                                    */
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+// Because the app is dependent on the database, we've decided to start the server only when the database connection
+// had been established successfully.
+// Comment: useFindAndModify: false was not used as it crashed the application.
+mongoose.connect(process.env.DATABASE_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+    .then(() => {
+        app.listen(port, () => {
+            console.log(`Connected to database and server is running on ${port}.`);
+        })
+    })
+    .catch((err) => {
+        console.log('Database connection failed: ', err);
+    });
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 /*                                              Homepage Route                                                        */
 /*--------------------------------------------------------------------------------------------------------------------*/
-app.get('/api', (req, res) => {
+app.get('/', (req, res) => {
     res.send('This is the homepage')
     //res.render('pages/index')
 })
@@ -65,10 +82,3 @@ app.use('/user', userRouter);
 /*--------------------------------------------------------------------------------------------------------------------*/
 const authRouter = require('./routes/auth')
 app.use('/auth', authRouter)
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-/*                                                     Run                                                            */
-/*--------------------------------------------------------------------------------------------------------------------*/
-/* app.listen(port, () => {
-    console.log('App is running on port ', port)
-}) */
