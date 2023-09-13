@@ -1,11 +1,11 @@
 // Auth Routes
 
-require('dotenv').config()
+require('dotenv').config();
 const User = require('../models/user');
 const express = require('express');
 //const {default: mongoose} = require('mongoose');
 const router = express.Router();
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 const maxAge = 3 * 24 * 60 * 60;
 
 
@@ -13,7 +13,7 @@ const createToken = (id) => {
     return jwt.sign({id}, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: maxAge
     });
-}
+};
 
 // Handle errors for user login and validation
 // Error handling function derived from Net Ninja Tutorial Node.js Auth Tutorial (JWT),
@@ -22,13 +22,18 @@ const handleErrors = (err) => {
     console.log(err.message, err.code);
     let errors = {email: '', password: ''};
 
+    // Login checks for email and password. It is not good practice to point a user to which part of the login is wrong
+    // as this can help hackers to work out if the email or the password are correct and make their job easier. Therefore,
+    // in A3 this will get reduced to a more generic message stating that something is wrong with the email or password.
+    // For debugging purposes we, however, left this in place for this assignment to produce clearer error messages.
+
     // incorrect email
-    if (err.message === 'Email does not exist.') {
+    if (err.message === 'incorrect email') {
         errors.email = 'That email is not registered';
     }
 
     // incorrect password
-    if (err.message === 'Incorrect password') {
+    if (err.message === 'incorrect password') {
         errors.password = 'That password is incorrect';
     }
 
@@ -49,12 +54,12 @@ const handleErrors = (err) => {
     }
 
     return errors;
-}
+};
 
 // GET - Sign in user form
 router.get('/signin', (req, res) => {
     res.render('auth/signin', {user: new User()});
-})
+});
 
 // POST - Sign in user -------------------------------------------------------------------------------------------------
 // Endpoint: /auth/signin
@@ -67,16 +72,16 @@ router.post('/signin', async (req, res) => {
             res.cookie('jwt', token, {
                 httpOnly: true,
                 maxAge: maxAge * 1000
-            })
-            res.status(200).json({user: user.id});
+            });
+            res.status(200).json({
+                user: user,
+                token: token
+            });
         })
         .catch((err) => {
             const errors = handleErrors(err);
             res.status(400).json({errors});
-        })
-
-    //console.log(email, password);
-    //res.send('Auth > Sign in Route');
+        });
 });
 
 // GET - Validate user -------------------------------------------------------------------------------------------------

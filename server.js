@@ -21,27 +21,26 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 
-
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                                 Middleware                                                         */
 /*--------------------------------------------------------------------------------------------------------------------*/
-app.use(express.static('public'))
+app.use(express.static('public'));
 app.use(cookieParser());
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                               Views Settings                                                       */
 /*--------------------------------------------------------------------------------------------------------------------*/
-app.set('view engine', 'ejs')
-app.set('views', __dirname + '/views')
-app.set('layout', 'layouts/layout')
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
+app.set('layout', 'layouts/layout');
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                                 App Uses                                                           */
 /*--------------------------------------------------------------------------------------------------------------------*/
-app.use('*', cors())
-app.use(expressLayouts)
+app.use('*', cors());
+app.use(expressLayouts);
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                             Database Connection                                                    */
@@ -57,7 +56,7 @@ mongoose.connect(process.env.DATABASE_URL, {
     .then(() => {
         app.listen(port, () => {
             console.log(`Connected to database and server is running on ${port}.`);
-        })
+        });
     })
     .catch((err) => {
         console.log('Database connection failed: ', err);
@@ -67,9 +66,9 @@ mongoose.connect(process.env.DATABASE_URL, {
 /*                                              Homepage Route                                                        */
 /*--------------------------------------------------------------------------------------------------------------------*/
 app.get('/', (req, res) => {
-    res.send('This is the homepage')
-    //res.render('pages/index')
-})
+    res.send('This is the homepage');
+    // A3 -> res.render('pages/index')
+});
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                                 User Route                                                         */
@@ -80,5 +79,5 @@ app.use('/user', userRouter);
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                                 Auth Route                                                         */
 /*--------------------------------------------------------------------------------------------------------------------*/
-const authRouter = require('./routes/auth')
-app.use('/auth', authRouter)
+const authRouter = require('./routes/auth');
+app.use('/auth', authRouter);
