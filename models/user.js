@@ -6,6 +6,7 @@
 const mongoose = require("mongoose");
 const {isEmail} = require('validator');
 require('mongoose-type-email');
+const Utils = require('../Utils');
 const bcrypt = require('bcrypt');
 
 // Create user schema
@@ -43,7 +44,7 @@ const userSchema = new mongoose.Schema({
 // hashed password before the data gets saved to the database. The pre method allows for that to take place before saving
 // occurs.
 
-// Execute function before doc gets saved to the database
+// Execute function before doc gets saved to the database (Middleware)
 userSchema.pre('save', async function (next) {
 
     // We have bcrypt generate a salt first.

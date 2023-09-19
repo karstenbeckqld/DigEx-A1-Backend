@@ -122,41 +122,58 @@ router.post('/', async (req, res) => {
         });
     }
 
+
     // Setup new User object with data from request body. We define an object and populate its properties from the
     // request body.
     const {firstName, lastName, email, accessLevel, password, bio} = req.body;
 
-    // Create new User object by using the properties from above.
-    const user = new User({
-        firstName,
-        lastName,
-        email,
-        accessLevel,
-        password,
-        bio,
-    });
+    // First we check if the entered email is already in the database and return a response if this is the case. If the
+    // entered email doesn't exist, we can continue creating a new user.
+    await User.findOne({email: req.body.email})
+        .then(async (user) => {
+            if (user != null) {
+                return res.status(400).json({
+                    message: 'User already exists'
+                })
+            }
 
-    // Save the new user to the database
-    // Now we save the new user to the database with the save() method. If the user gets saved successfully, we return
-    // the user object as json data and set the status to 201.
-    await user.save()
-        .then((user) => {
-            console.log('New user created.');
-            res.status(201).json(user);
-        })
-        .catch((err) => {
-            // Because the User object defines the email to be unique, mongoose will check for this property and throw an
-            // error, if the entered email already is in the database. This will get caught here and the user returned to
-            // the New User dialog with an error message. Here we also check for the right password length and add this
-            // error to the return if it occurs.
-            console.log('User not created.');
-            const errors = handleErrors(err);
-            res.status(500).json({errors});
+            // Create new User object by using the properties from above.
+            const newUser = new User({
+                firstName,
+                lastName,
+                email,
+                accessLevel,
+                password,
+                bio,
+            });
 
+            // Save the new newUser to the database
+            // Now we save the new newUser to the database with the save() method. If the newUser gets saved successfully, we return
+            // the newUser object as json data and set the status to 201.
+            await newUser.save()
+                .then((user) => {
+                    console.log('New newUser created.');
+                    res.status(201).json(user);
+                })
+                .catch((err) => {
+                    // Because the User object defines the email to be unique, mongoose will check for this property and throw an
+                    // error, if the entered email already is in the database. This will get caught here and the newUser returned to
+                    // the New User dialog with an error message. Here we also check for the right password length and add this
+                    // error to the return if it occurs.
+                    console.log('User not created.');
+                    const errors = handleErrors(err);
+                    res.status(500).json({errors});
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.status(500).json({
+                        message: 'Account could not be created.'
+                    })
+                });
 
             // For A3
-            // res.render('user/newUser', {
-            //    user: user,
+            // res.render('newUser/newUser', {
+            //    newUser: newUser,
             //    errorMessage: err,
             // });
         });
@@ -200,7 +217,7 @@ router.put('/:id', async (req, res) => {
 // To delete a user, we use a delete request as these are often used for database entry deletion.
 router.delete('/:id', async (req, res) => {
 
-    // Check id ID is missing from the request, if yes, return.
+    // Check if ID is missing from the request, if yes, return.
     if (!req.params.id) {
         return res.status(400).json({
             message: 'User ID missing from request'

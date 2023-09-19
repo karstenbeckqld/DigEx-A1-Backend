@@ -7,7 +7,6 @@
 /*--------------------------------------------------------------------------------------------------------------------*/
 require('dotenv').config();
 require('crypto').randomBytes(64).toString('hex');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
@@ -26,8 +25,8 @@ const app = express();
 /*--------------------------------------------------------------------------------------------------------------------*/
 app.use(express.static('public'));
 app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                               Views Settings                                                       */
@@ -49,10 +48,7 @@ app.use(expressLayouts);
 // Because the app is dependent on the database, we've decided to start the server only when the database connection
 // had been established successfully.
 // Comment: useFindAndModify: false was not used as it crashed the application.
-mongoose.connect(process.env.DATABASE_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(process.env.DATABASE_URL)
     .then(() => {
         app.listen(port, () => {
             console.log(`Connected to database and server is running on ${port}.`);
