@@ -1,6 +1,10 @@
+/*--------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------              Auth Middleware               ---------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 // The authMiddleware function provides an easy way to control access to restricted pages by verifying the JWT token on
 // the server. The reason why this function got moved to its own file is so that we can use it for individual routes
-// later on. This can be done in the following way:
+// later on. This can be done in the following way (example):
 // app.get('/restrictedRoute', requireAuth, (req, res) => {res.send('This is the homepage'); });
 // If the routes are set properly (for the final stage of the project), the server will then redirect, for example, to
 // the signin page if a user requests access.

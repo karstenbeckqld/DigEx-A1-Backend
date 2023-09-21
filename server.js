@@ -9,7 +9,6 @@ require('dotenv').config();
 require('crypto').randomBytes(64).toString('hex');
 const cookieParser = require('cookie-parser');
 const express = require('express');
-const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose').default;
 const cors = require('cors');
 const port = process.env.PORT || 3000;
@@ -39,7 +38,6 @@ app.set('layout', 'layouts/layout');
 /*                                                 App Uses                                                           */
 /*--------------------------------------------------------------------------------------------------------------------*/
 app.use('*', cors());
-app.use(expressLayouts);
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*                                             Database Connection                                                    */
@@ -63,7 +61,6 @@ mongoose.connect(process.env.DATABASE_URL)
 /*--------------------------------------------------------------------------------------------------------------------*/
 app.get('/', (req, res) => {
     res.send('This is the homepage');
-    // A3 -> res.render('pages/index')
 });
 
 /*--------------------------------------------------------------------------------------------------------------------*/

@@ -7,18 +7,17 @@ const mongoose = require("mongoose");
 const {isEmail} = require('validator');
 require('mongoose-type-email');
 const Utils = require('../Utils');
-const bcrypt = require('bcrypt');
 
 // Create user schema
 // The schema defines the database fields and their properties.
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: true,
+        required: [true,'First name is required.']
     },
     lastName: {
         type: String,
-        required: true
+        required: [true, 'Last name is required.']
     },
     email: {
         type: mongoose.SchemaTypes.Email,
@@ -28,7 +27,7 @@ const userSchema = new mongoose.Schema({
     },
     accessLevel: {
         type: Number,
-        required: true
+        required: [true, 'The access level is required.']
     },
     password: {
         type: String,
@@ -47,11 +46,12 @@ const userSchema = new mongoose.Schema({
 // Execute function before doc gets saved to the database (Middleware)
 userSchema.pre('save', async function (next) {
 
-    // We have bcrypt generate a salt first.
-    const salt = await bcrypt.genSalt();
+    // Check if the password is present and is modified.
+    if (this.password && this.isModified()) {
 
-    // Now we assign this user's password by having bcrypt generating a hashed password, using above salt.
-    this.password = await bcrypt.hash(this.password, salt);
+        // We replace the original password with the new hashed password.
+        this.password = Utils.hashPassword(this.password);
+    }
 
     // Execute next function.
     next();
@@ -72,7 +72,7 @@ userSchema.statics.login = async function (email, password) {
 
         // Bcrypt takes two parameters, the plain password, and, if the user exists, the stored and hashed password from
         // the database.
-        const auth = await bcrypt.compare(password, user.password);
+        const auth = Utils.verifyPassword(password, user.password);
 
         // If the passwords match, we return the user.
         if (auth){
