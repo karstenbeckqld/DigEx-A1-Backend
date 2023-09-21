@@ -2,6 +2,9 @@
 /*---------------------------------              Auth Middleware               ---------------------------------------*/
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+/*jshint esversion: 8 */
+// To avoid validator errors regarding arrow function syntax, we use the above comment line.
+
 // The authMiddleware function provides an easy way to control access to restricted pages by verifying the JWT token on
 // the server. The reason why this function got moved to its own file is so that we can use it for individual routes
 // later on. This can be done in the following way (example):
@@ -16,8 +19,8 @@ const jwt = require('jsonwebtoken');
 // to use this function as middleware, so that it calls the next execution point. This is required if we want to use the
 // function in the way as described above. At the current stage, however, the next parameter doesn't get used as the
 // function is only called in isolation.
-const requireAuth = (req, res, next) => {
-    const token = req.headers['authorization'].split(' ')[1];
+const requireAuth = (req, res) => {
+    const token = req.headers.authorization.split(' ')[1];
 
     // First we check if the token exists an is valid.
     if (token) {

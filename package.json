@@ -1,7 +1,7 @@
 {
-  "name": "haircuts-backend",
+  "name": "DigEx A1",
   "version": "1.0.0",
-  "description": "",
+  "description": "API for DigEx Major Project 1 (OUA)",
   "main": "server.js",
   "scripts": {
     "dev": "./node_modules/nodemon/bin/nodemon.js server.js",

@@ -2,6 +2,9 @@
 /*--------------------------------------               User Routes               -------------------------------------*/
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+/*jshint esversion: 8 */
+// To avoid validator errors regarding arrow function syntax, we use the above comment line.
+
 // Import dependencies.
 const express = require('express');
 const router = express.Router();
@@ -87,7 +90,7 @@ router.post('/', async (req, res) => {
                 console.log('Email already in database.');
                 return res.status(400).json({
                     message: 'User email already exists'
-                })
+                });
             }
 
             // Create new User object by using the properties from above.
@@ -160,10 +163,24 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     // Check if ID is missing from the request, if yes, return.
-    if (!req.params.id || req.params.id === '') {
-        console.log('No user ID in request');
+    if (!req.params) {
+        console.log('No parameters in request');
         return res.status(400).json({
             message: 'User ID missing from request'
+        });
+    }
+
+    if (!req.params.id){
+        console.log('No user ID provided');
+        return res.status(400).json({
+            message: 'User ID missing from request'
+        });
+    }
+
+    if (req.params.id === ''){
+        console.log('Empty parameter provided');
+        return res.status(400).json({
+            message: 'Empty parameter provided'
         });
     }
 

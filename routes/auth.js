@@ -2,6 +2,10 @@
 /*---------------------------------------              Auth Routes               -------------------------------------*/
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+/*jshint esversion: 8 */
+// To avoid validator errors regarding arrow function syntax, we use the above comment line.
+
+// Load required dependencies.
 require('dotenv').config();
 const User = require('../models/user');
 const express = require('express');
@@ -22,7 +26,7 @@ router.post('/signin', async (req, res) => {
         console.log('Email or password empty');
         return res.status(400).json({
             message: 'Please provide an email and password.'
-        })
+        });
     }
 
     // Define an object that holds the values frm the request body.

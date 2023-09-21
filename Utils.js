@@ -2,6 +2,9 @@
 /*---------------------------------------             Utility Class              -------------------------------------*/
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+/*jshint esversion: 6 */
+// To avoid validator errors regarding arrow function syntax, we use the above comment line.
+
 // The Utils class provides miscellaneous functions to the API that can get used by any JS file in the application and
 // are not necessarily restricted to one functionality.
 
@@ -95,7 +98,7 @@ class Utils {
             // Now we set the expiry for this token to 30 minutes.
             expiresIn: '30min'
         });
-    };
+    }
 }
 
 // Export the class using the 'new' keyword.
