@@ -26,20 +26,20 @@ const requireAuth = (req, res) => {
     if (token) {
 
         // If a token exists, we can try to verify it with the server.
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decodedToken) =>{
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, tokenData) => {
 
             // If verification fails, we return the error. In the final project, this response could lead to the
             // signin page.
-            if(err){
+            if (err) {
                 console.log(err.message);
                 res.sendStatus(403);
             }
 
-            // If verification succeeds, we return the token. In the final project, this response could lead to a part
+                // If verification succeeds, we return the token. In the final project, this response could lead to a part
             // of the site that is only accessible to logged-in users.
             else {
-              console.log(decodedToken);
-              res.status(200).json(decodedToken);
+                console.log(tokenData);
+                res.status(200).json(tokenData);
             }
         });
     }
@@ -53,4 +53,4 @@ const requireAuth = (req, res) => {
 };
 
 // Finally, we export the function.
-module.exports = { requireAuth };
+module.exports = {requireAuth};

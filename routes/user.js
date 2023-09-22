@@ -163,24 +163,10 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     // Check if ID is missing from the request, if yes, return.
-    if (!req.params) {
+    if (!req.params.id || !req.params || req.params.id === '') {
         console.log('No parameters in request');
         return res.status(400).json({
             message: 'User ID missing from request'
-        });
-    }
-
-    if (!req.params.id){
-        console.log('No user ID provided');
-        return res.status(400).json({
-            message: 'User ID missing from request'
-        });
-    }
-
-    if (req.params.id === ''){
-        console.log('Empty parameter provided');
-        return res.status(400).json({
-            message: 'Empty parameter provided'
         });
     }
 

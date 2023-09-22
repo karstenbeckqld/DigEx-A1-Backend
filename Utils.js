@@ -93,7 +93,7 @@ class Utils {
     // secret is stored in the.ebv file for security reasons and gets retrieved from there via the process.env function. It
     // then returns the json web token to the calling function.
     createToken(userObject)  {
-        return jwt.sign({userObject}, process.env.ACCESS_TOKEN_SECRET, {
+        return jwt.sign({user: userObject}, process.env.ACCESS_TOKEN_SECRET, {
 
             // Now we set the expiry for this token to 30 minutes.
             expiresIn: '30min'
